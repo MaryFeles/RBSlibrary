@@ -1,0 +1,12 @@
+body{
+	overflow: scroll;
+}
+
+#wrapper{
+	width: 1000px;
+	margin: auto; 
+}
+
+.subtitle{
+	font-size: 60pt;
+}
