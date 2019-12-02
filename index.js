@@ -30,6 +30,7 @@ let journalDate = [
 
 //------------------------------------------Вкладка "Книги"------------------------------------------------------------
 
+// таблица с книгами
 let booksTable = {
 	width:1000,
 	scrollY:true,
@@ -50,6 +51,7 @@ let booksTable = {
 	]
 };
 
+// кнопки на вкладке "Книги"
 let booksButtons = {
     id:"booksButtons",
     cols:[
@@ -62,6 +64,7 @@ let booksButtons = {
     ]
 };
 
+// вкладка "Книги"
 let books = {
 	id: 'books',
 	rows:[
@@ -100,59 +103,152 @@ webix.ui.datafilter.customSelectStatusBook = {
     }
   };
 
+// форма для добавления книг
 let formAddBook = {
   	view:"form",
   	id:"formAddBook",
+  	width: 500,
   	elements:[
-  		{ view:"text", label:"ID книги", name:"id"}, 
-  		{ view:"text", label:"Авторы", name:"authors"},
-  		{ view:"text", label:"Название", name:"name"},
-  		{ view:"text", label:"Издательство", name:"publishing"},
-  		{ view:"text", label:"Год", name:"year"},
-  		{ view:"text", label:"Количество страниц", name:"pages"},
-  		{ margin:20, cols:[
+  		{ view:"text", placeholder:"ID книги", name:"id", width: 200}, 
+  		{ view:"text", placeholder:"Авторы", name:"authors"},
+  		{ view:"text", placeholder:"Название", name:"name"},
+  		{cols:[
+  			{ view:"text", placeholder:"Издательство", name:"publishing", width: 200},
+  			{ view:"text", placeholder:"Год", name:"year", width: 90},
+  			{ view:"text", placeholder:"Количество страниц", name:"pages"},
+  		]},
+  		{cols:[
   			{},
-  			{ view:"button", value:"Отмена", width:200},
-  			{ view:"button", type:"form", value:"Добавить книгу", width:200, click:function(){
-  				var values = this.getFormView().getValues();
-  				webix.message(JSON.stringify(values));
+  			{ view:"button", value:"Отмена", width:150, click:function(){
+  				$$("formAddBook").clear();
+  				$$("formAddBook").clearValidation();
+  				$$('windowAddBook').hide();
+  			}},
+  			{ view:"button", type:"form", value:"Добавить книгу", width:150, click:function(){
+  				$$("formAddBook").validate();
+  				if ($$("formAddBook").validate() == true){          
+  					var values = this.getFormView().getValues();
+  					webix.message(JSON.stringify(values));
+  				}
   			}}
   		]}
-	]
+	],
+	// правила валидации
+	rules:{
+		"id":webix.rules.isNumber,
+		"authors":webix.rules.isNotEmpty,
+		"name":webix.rules.isNotEmpty,
+		"publishing":webix.rules.isNotEmpty,
+		"year":webix.rules.isNumber,
+		"pages":webix.rules.isNumber
+	}
 };
 
+// форма для измененения книг
+let formEditBook = {
+  	view:"form",
+  	id:"formEditBook",
+  	width: 500,
+  	elements:[
+  		{ view:"text", placeholder:"ID книги", name:"id", width: 200}, 
+  		{ view:"text", placeholder:"Авторы", name:"authors"},
+  		{ view:"text", placeholder:"Название", name:"name"},
+  		{cols:[
+  			{ view:"text", placeholder:"Издательство", name:"publishing", width: 200},
+  			{ view:"text", placeholder:"Год", name:"year", width: 90},
+  			{ view:"text", placeholder:"Количество страниц", name:"pages"},
+  		]},
+  		{cols:[
+  			{},
+  			{ view:"button", value:"Отмена", width:150, click:function(){
+  				$$("formEditBook").clear();
+  				$$("formEditBook").clearValidation();
+  				$$('windowEditBook').hide();
+  			}},
+  			{ view:"button", type:"form", value:"Изменить", width:150, click:function(){
+  				$$("formEditBook").validate();
+  				if ($$("formEditBook").validate() == true){          
+  					var values = this.getFormView().getValues();
+  					webix.message(JSON.stringify(values));
+  				}
+  			}}
+  		]}
+	],
+	// правила валидации
+	rules:{
+		"id":webix.rules.isNumber,
+		"authors":webix.rules.isNotEmpty,
+		"name":webix.rules.isNotEmpty,
+		"publishing":webix.rules.isNotEmpty,
+		"year":webix.rules.isNumber,
+		"pages":webix.rules.isNumber
+	}
+};
+
+// форма выдачи книги
+
+
+// окно с формой для добавления книги
 let windowAddBook = webix.ui({
     view:"window",
     modal: true,
     id:"windowAddBook",
-    head:"Добавить новую книгу",
+    head:"Введите данные новой книги",
     position:"center",
-    width: 600,
+    width: 500,
     height: 400,
     body:formAddBook
 });
 
+// окно с формой для изменения книги
+let windowEditBook = webix.ui({
+    view:"window",
+    modal: true,
+    id:"windowEditBook",
+    head:"Изменение книги",
+    position:"center",
+    width: 500,
+    height: 400,
+    body:formEditBook
+});
 
+// окно с формой для выдачи книги
+let windowGiveOutBook = webix.ui({
+    view:"window",
+    modal: true,
+    id:"windowGiveOutBook",
+    head:"",
+    position:"center",
+    width: 500,
+    height: 400,
+    body:formGiveOutBook
+});
+
+// обработчик события кнопки "Изменить"
 function editBook(id){
-    // your code here
+    $$('windowEditBook').show();
     webix.message("Click on button " + id);
 }
-  
+
+// обработчик события кнопки "Добавить"  
 function addBook(id){
     $$('windowAddBook').show();
     webix.message("Click on button " + id);
 }
 
+// обработчик события кнопки "Удалить"
 function removeBook(id){
     // your code here
     webix.message("Click on button " + id);
 }
 
+// обработчик события кнопки "Выдать книгу"
 function giveOutBook(id){
-    // your code here
+    $$('windowGiveOutBook').show();
     webix.message("Click on button " + id);
 }
 
+// обработчик события кнопки "Принять книгу"
 function takeBackBook(id){
     // your code here
     webix.message("Click on button " + id);
@@ -183,9 +279,9 @@ let employeesButtons = {
     id:"employeesButtons",
     cols:[
         {},
-        { view:"button", value:"Изменить", width:100 },
-        { view:"button", value:"Добавить", width:100 },
-        { view:"button", value:"Удалить", width:100 },
+        { view:"button", id:"btn_edit_employee",value:"Изменить", width:100, click:editEmployee },
+        { view:"button", id:"btn_add_employee", value:"Добавить", width:100, click:addEmployee },
+        { view:"button", id:"btn_remove_employee", value:"Удалить", width:100, click:removeEmployee },
     ]
 };
 
@@ -197,7 +293,7 @@ let employeesBooksTable = {
 	columnWidth:200,
 	columns:[
 		{id:"id", header:["ID книги",{ content:"textFilter"}], width: 100, sort:"int"},
-		{id:"name", header:["Книга",{ content:"textFilter"}],  sort:"string", adjust: true},		
+		{id:"name", header:["Книга",{ content:"textFilter"}],  sort:"string", adjust: true, width: 400},		
 		{id:"date_of_issue", header:["Дата выдачи",{ content:"textFilter"}],  sort:"date"},		
 	]
 };
@@ -209,9 +305,141 @@ let employees = {
 		{cols:[employeesButtons]},
 		{cols:[{template:"Книги на руках:", css:"subtitle"}], height: 40},
 		{cols:[employeesBooksTable],  height: 200},
-		{cols:[{view:"button", value:"Принять книгу", width:150}]}
+		{cols:[{view:"button", id:"take_back_book", value:"Принять книгу", width:150, click:takeBackBook}]}
 	]
 };
+
+// форма для добавления сотрудников
+let formAddEmployee = {
+  	view:"form",
+  	id:"formAddEmployee",
+  	width: 650,
+  	elements:[
+  		{cols:[
+  			{ view:"text", placeholder:"Фамилия", name:"surname", width: 200}, 
+  			{ view:"text", placeholder:"Имя", name:"name",  width: 200},
+  			{ view:"text", placeholder:"Отчество", name:"middle_name",  width: 200}
+  		]},
+  		{cols:[
+  			{ view:"text", placeholder:"Должность", name:"position", width: 200},
+  			{ view:"text", placeholder:"Номер телефона", name:"phone_number", width: 200},
+  		]},
+  		{cols:[
+  			{},
+  			{ view:"button", value:"Отмена", width:150, click:function(){
+  				$$("formAddEmployee").clear();
+  				$$("formAddEmployee").clearValidation();
+  				$$('windowAddEmployee').hide();
+  			}},
+  			{ view:"button", type:"form", value:"Добавить сотрудника", width:200, click:function(){
+  				$$("formAddEmployee").validate();
+  				if ($$("formAddEmployee").validate() == true){          
+  					var values = this.getFormView().getValues();
+  					webix.message(JSON.stringify(values));
+  				}
+  			}}
+  		]}
+	],
+	// правила валидации
+	rules:{
+		"surname":webix.rules.isNotEmpty,
+		"name":webix.rules.isNotEmpty,
+		"middle_name":webix.rules.isNotEmpty,
+		"position":webix.rules.isNotEmpty,
+		"phone_number":webix.rules.isNumber
+	}
+};
+
+// форма для изменения сотрудников
+let formEditEmployee = {
+  	view:"form",
+  	id:"formEditEmployee",
+  	width: 650,
+  	elements:[
+  		{cols:[
+  			{ view:"text", placeholder:"Фамилия", name:"surname", width: 200}, 
+  			{ view:"text", placeholder:"Имя", name:"name",  width: 200},
+  			{ view:"text", placeholder:"Отчество", name:"middle_name",  width: 200}
+  		]},
+  		{cols:[
+  			{ view:"text", placeholder:"Должность", name:"position", width: 200},
+  			{ view:"text", placeholder:"Номер телефона", name:"phone_number", width: 200},
+  		]},
+  		{cols:[
+  			{},
+  			{ view:"button", value:"Отмена", width:150, click:function(){
+  				$$("formEditEmployee").clear();
+  				$$("formEditEmployee").clearValidation();
+  				$$('windowEditEmployee').hide();
+  			}},
+  			{ view:"button", type:"form", value:"Изменить", width:200, click:function(){
+  				$$("formEditEmployee").validate();
+  				if ($$("formEditEmployee").validate() == true){          
+  					var values = this.getFormView().getValues();
+  					webix.message(JSON.stringify(values));
+  				}
+  			}}
+  		]}
+	],
+	// правила валидации
+	rules:{
+		"surname":webix.rules.isNotEmpty,
+		"name":webix.rules.isNotEmpty,
+		"middle_name":webix.rules.isNotEmpty,
+		"position":webix.rules.isNotEmpty,
+		"phone_number":webix.rules.isNumber
+	}
+};
+
+// окно с формой для добавления сотрудников
+let windowAddEmployee = webix.ui({
+    view:"window",
+    modal: true,
+    id:"windowAddEmployee",
+    head:"Введите данные нового сотрудника",
+    position:"center",
+    width: 800,
+    height: 400,
+    body:formAddEmployee
+});
+
+// окно с формой для изменения сотрудников
+let windowEditEmployee = webix.ui({
+    view:"window",
+    modal: true,
+    id:"windowEditEmployee",
+    head:"Введите данные нового сотрудника",
+    position:"center",
+    width: 800,
+    height: 400,
+    body:formEditEmployee
+});
+
+// обработчик события кнопки "Изменить" 
+function editEmployee(id){
+    $$('windowEditEmployee').show();
+    webix.message("Click on button " + id);
+}
+
+// обработчик события кнопки "Добавить"  
+function addEmployee(id){
+    $$('windowAddEmployee').show();
+    webix.message("Click on button " + id);
+}
+
+// обработчик события кнопки "Удалить"
+function removeEmployee(id){
+    // your code here
+    webix.message("Click on button " + id);
+}
+
+// обработчик события кнопки "Принять книгу"
+function takeBackBook(id){
+    // your code here
+    webix.message("Click on button " + id);
+}
+
+
 
 //---------------------------------------------Вкладка "Журнал"----------------------------------------------
 
@@ -232,7 +460,6 @@ let journalTable = {
 		{id:"return_date", header:["Дата возврата",{ content:"textFilter" }],  width:140, sort:"string"},
 		{id:"who_issued", header:["Кем выдана", { content:"textFilter" }], sort:"string", adjust: true}
 	]
-
 };
 
 
@@ -281,8 +508,8 @@ let toolbar = {
     id:"myToolbar",
     cols:[
         {},
-        { view:"button", value:"Log in", width:100 },
-        { view:"button", value:"Log out", width:100 }
+        { view:"button", id:"btn_log_in", value:"Log in", width:100, click: logIn },
+        { view:"button", id:"btn_log_out", value:"Log out", width:100 }
     ]
 };
 
@@ -305,6 +532,57 @@ let tabview = {
   	}
   ]
 };
+
+// форма авторизации
+let formLogIn = {
+  	view:"form",
+  	id:"formLogIn",
+  	width: 350,
+  	elements:[  		
+  			{ view:"text", placeholder:"Логин", name:"login", width: 250, align:"center"}, 
+  			{ view:"text", type:"password", placeholder:"Пароль", name:"pass",  width: 250, align:"center"},  	
+  		{cols:[
+  			{},
+  			{ view:"button", value:"Отмена", width:125, click:function(){
+  				$$("formLogIn").clear();
+  				$$("formLogIn").clearValidation();
+  				$$('windowLogIn').hide();
+  			}},
+  			{ view:"button", type:"form", value:"Войти", width:125, click:function(){
+  				$$("formLogIn").validate();
+  				if ($$("formLogIn").validate() == true){          
+  					var values = this.getFormView().getValues();
+  					webix.message(JSON.stringify(values));
+  				}
+  			}},
+  			{}
+  		]}
+	],
+	// правила валидации
+	rules:{
+		"login":webix.rules.isNotEmpty,
+		"pass":webix.rules.isNotEmpty
+	}
+};
+
+
+// окно с формой авторизации
+let windowLogIn = webix.ui({
+    view:"window",
+    modal: true,
+    id:"windowLogIn",
+    head:"Введите логин и пароль",
+    position:"center",
+    width: 400,
+    height: 350,
+    body:formLogIn
+});
+
+function logIn(id){
+	$$("windowLogIn").show();
+	webix.message("Click on button " + id);
+}
+
 
 webix.ready(function() {
 	let myGUI = webix.ui({
