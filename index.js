@@ -68,7 +68,6 @@ let booksButtons = {
 let books = {
 	id: 'books',
 	rows:[
-		{template:"Something", height: 40},
 		{cols:[booksTable], height: 400},
 		{cols:[booksButtons]}
 	]
@@ -185,8 +184,54 @@ let formEditBook = {
 	}
 };
 
-// форма выдачи книги
 
+// форма выдачи книги
+let formGiveOutBook = {
+  	view:"form",
+  	id:"formGiveOutBook",
+  	width: 500,
+  	elements:[
+  		{cols:[
+  			{template: "Книга:", borderless:true, type:"header", width: 130},
+  			{id: 'bookTemplate', template: " ", type:"header", borderless:true}
+  		]},  		
+  		{cols:[
+  			{template:"Кому:", borderless:true, type:"header", width: 130},
+  			{ view:"combo", name:"who_got", options:["anybody1","anybody2","anybody3"], editable:true}
+  		]},
+  		{cols:[
+  			{template:"Кто выдал:", borderless:true, type:"header", width: 130},
+  			{view:"combo", name:"who_issued", options:["anybody1","anybody2","anybody3"], editable:true}
+  		]},
+  		{cols:[
+  			{template:"Дата выдачи:", borderless:true, type:"header", width: 130},
+  			{view:"datepicker", name:"date",  value:new Date(), stringResult:true}
+  		]},
+  		{cols:[
+  			{},
+  			{ view:"button", value:"Отмена", width:150, click:function(){
+  				$$("formGiveOutBook").clear();
+  				$$("formGiveOutBook").clearValidation();
+  				$$('windowGiveOutBook').hide();
+  			}},
+  			{ view:"button", type:"form", value:"Выдать", width:150, click:function(){
+  				$$("formGiveOutBook").validate();
+  				if ($$("formGiveOutBook").validate() == true){          
+  					var values = this.getFormView().getValues();
+  					webix.message(JSON.stringify(values));
+  				}
+  			}}
+  		]}
+	],
+	elementsConfig:{
+    labelWidth:110
+  	},
+	rules:{
+		"who_got":webix.rules.isNotEmpty,
+		"who_issued":webix.rules.isNotEmpty,
+		"date":webix.rules.isNotEmpty
+	}
+};
 
 // окно с формой для добавления книги
 let windowAddBook = webix.ui({
@@ -217,7 +262,7 @@ let windowGiveOutBook = webix.ui({
     view:"window",
     modal: true,
     id:"windowGiveOutBook",
-    head:"",
+    head:"Форма выдачи книги",
     position:"center",
     width: 500,
     height: 400,
@@ -243,9 +288,17 @@ function removeBook(id){
 }
 
 // обработчик события кнопки "Выдать книгу"
-function giveOutBook(id){
-    $$('windowGiveOutBook').show();
-    webix.message("Click on button " + id);
+function giveOutBook(){
+	let selectedBook = $$('booksTable').getSelectedItem();
+	console.log(selectedBook);
+	$$('bookTemplate').define('template', selectedBook.authors);
+    if (selectedBook == undefined){
+    	webix.message("Выберите книгу");
+    	} else {
+    		$$('windowGiveOutBook').show();
+    		webix.message("Книга: " + selectedBook.name);
+    		return(selectedBook);
+    	}
 }
 
 // обработчик события кнопки "Принять книгу"
